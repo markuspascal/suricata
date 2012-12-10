@@ -169,6 +169,7 @@ detect-stream_size.c detect-stream_size.h \
 detect-tag.c detect-tag.h \
 detect-threshold.c detect-threshold.h \
 detect-tls.c detect-tls.h \
+detect-dummy.c detect-dummy.h \
 detect-tls-version.c detect-tls-version.h \
 detect-tos.c detect-tos.h \
 detect-ttl.c detect-ttl.h \
