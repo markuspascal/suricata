@@ -17,6 +17,7 @@
 #include "util-debug.h"
 
 #include "host.h"
+#include "libhtp/htp/dslib.h"
 
 /*prototypes*/
 int DetectScanningMatch (ThreadVars *, DetectEngineThreadCtx *, Packet *, Signature *, SigMatch *);
@@ -71,24 +72,41 @@ int DetectScanningMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *
     }
     /* hier muss der host als key in einem Table abgelegt werden.
     	value ist der entsprechende Count wie oft ein Flag kam*/
-    TCPHdr* tcp_hdr = p->tcph;
-    uint8_t flags = tcp_hdr->th_flags;
+   
     
-    printf("########### %d ###########\n",flags);
+   
+    
+   // printf("########### %d ###########\n",flags);
     //wenn noch nicht angelegt neu anlegen (in decode.h void pointer nimmt alles)
     ddata = (DetectScanningData *) h->scanning;
     if (!ddata) {
         /* initialize fresh Scanningdata */
-        ddata = SCMalloc(sizeof(DetectScanningData));
-        bzero(ddata, sizeof(DetectScanningData));
-        h->scanning = ddata;
+       ddata = SCMalloc(sizeof(DetectScanningData));
+       bzero(ddata, sizeof(DetectScanningData));
+      
+       h->scanning = ddata;
     }
     
-    (ddata->cnt_packets)++;//heir werden die neuen Daten in den Ergebnispointer geschrieben
+    if(!ddata->data){
+        printf("############## initialized table");
+        ddata->data = table_create(50);     
+    }
+    
+    TCPHdr* tcp_hdr = p->tcph;
+    uint8_t flags = tcp_hdr->th_flags;
+    static int b = 0;
+    
+    if(flags==16){  
+        b+=1;
+        //table_add(ddata->data,'asd',b);
+       
+    }
+    
+    //(ddata->cnt_packets)++;//heir werden die neuen Daten in den Ergebnispointer geschrieben
     //printf("host found, packets now %d\n", ddata->cnt_packets);
     //0 kein alert, 1 alert
-    ret = (ddata->cnt_packets > dsig->max_numpackets);
-    
+    //ret = (ddata->cnt_packets > dsig->max_numpackets);
+    ret = (b>4);
     HostRelease(h);
     return ret;
 }
