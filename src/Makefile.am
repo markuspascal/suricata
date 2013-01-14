@@ -159,6 +159,7 @@ detect-replace.c detect-replace.h \
 detect-rev.c detect-rev.h \
 detect-rpc.c detect-rpc.h \
 detect-sameip.c detect-sameip.h \
+detect-scanning.c detect-scanning.h \
 detect-seq.c detect-seq.h \
 detect-sid.c detect-sid.h \
 detect-ssh-proto-version.c detect-ssh-proto-version.h \

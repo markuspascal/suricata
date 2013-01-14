@@ -46,7 +46,7 @@ void DetectDummyRegisterTests (void);
  */
 
 void DetectDummyRegister(void) {
-    sigmatch_table[DETECT_DUMMY].name = "dummy";
+    sigmatch_table[DETECT_DUMMY].name = "dummy";//der name fŸr das Modul der angegeben wird in der Rule
     sigmatch_table[DETECT_DUMMY].Match = DetectDummyMatch;
     sigmatch_table[DETECT_DUMMY].Setup = DetectDummySetup;
     sigmatch_table[DETECT_DUMMY].Free = DetectDummyFree;
@@ -65,7 +65,7 @@ void DetectDummyRegister(void) {
  * \retval 1 match
  */
 int DetectDummyMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *p, Signature *s, SigMatch *m) {
-
+    //fŸr jedes einzelne Paket aufegrufen
     int ret = 0;
     DetectDummySig *dsig = (DetectDummySig *) m->ctx;
     DetectDummyData *ddata;
@@ -89,8 +89,9 @@ int DetectDummyMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *p, 
         printf("host not found!\n");
         return 0;
     }
-
-    ddata = (DetectDummyData *) h->dummy;
+    /* hier muss der host als key in einem Table abgelegt werden.
+    	value ist der entsprechende Count wie oft ein Flag kam*/
+    ddata = (DetectDummyData *) h->dummy;//wenn noch nicht angelegt neu anlegen (in decode.h void pointer nimmt alles)
     if (!ddata) {
         /* initialize fresh dummydata */
         ddata = SCMalloc(sizeof(DetectDummyData));
@@ -98,9 +99,9 @@ int DetectDummyMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *p, 
         h->dummy = ddata;
     }
     
-    (ddata->cnt_packets)++;
+    (ddata->cnt_packets)++;//heir werden die neuen Daten in den Ergebnispointer geschrieben
     //printf("host found, packets now %d\n", ddata->cnt_packets);
-    ret = (ddata->cnt_packets > dsig->max_numpackets);
+    ret = (ddata->cnt_packets > dsig->max_numpackets);//vgl mit wert aus der signatur und rŸckgabe boolean ob alert oder nicht
     
     HostRelease(h);
     return ret;
@@ -117,7 +118,7 @@ int DetectDummyMatch (ThreadVars *t, DetectEngineThreadCtx *det_ctx, Packet *p, 
  * \retval -1 on Failure
  */
 static int DetectDummySetup (DetectEngineCtx *de_ctx, Signature *s, char *dummystr) {
-
+    /*wird nur einmal aufgerufen am anfang*/	
     SigMatch *sm = NULL;
     DetectDummySig *dsig = NULL;
     
@@ -126,7 +127,10 @@ static int DetectDummySetup (DetectEngineCtx *de_ctx, Signature *s, char *dummys
 
     sm = SigMatchAlloc();
     if (sm == NULL) { goto error; }
-
+    
+    /*hier musss der dummystr verarbeitet werden 
+    und die entsprechenden Felder in der DummyDataSig gesetzt werden
+    ...definiert worauf geachtet wird*/
     dsig->max_numpackets = atoi(dummystr);
 
     sm->type = DETECT_DUMMY;

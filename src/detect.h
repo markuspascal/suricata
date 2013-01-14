@@ -1098,6 +1098,7 @@ enum {
     DETECT_IPREP,
 
     DETECT_DUMMY,
+    DETECT_SCANNING,
 
     /* make sure this stays last */
     DETECT_TBLSIZE,
